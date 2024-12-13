@@ -11,22 +11,14 @@ export const resources = pgTable("resources", {
     .$defaultFn(() => nanoid()),
   content: text("content").notNull(),
 
-  createdAt: timestamp("created_at")
-    .notNull()
-    .default(sql`now()`),
-  updatedAt: timestamp("updated_at")
-    .notNull()
-    .default(sql`now()`),
+  createdAt: timestamp("created_at", { mode: "string" }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { mode: "string" }).notNull().defaultNow(),
 });
 
 // Schema for resources - used to validate API requests
-export const insertResourceSchema = createSelectSchema(resources)
-  .extend({})
-  .omit({
-    id: true,
-    createdAt: true,
-    updatedAt: true,
-  });
+export const insertResourceSchema = z.object({
+  content: z.string(),
+});
 
 // Type for resources - used to type API request params and within Components
 export type NewResourceParams = z.infer<typeof insertResourceSchema>;

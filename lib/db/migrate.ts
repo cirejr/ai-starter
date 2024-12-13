@@ -1,26 +1,23 @@
 import { env } from "@/lib/env.mjs";
-  
-import { drizzle } from "drizzle-orm/postgres-js";
-import { migrate } from "drizzle-orm/postgres-js/migrator";
-import postgres from "postgres";
+import { neon } from "@neondatabase/serverless";
 
+import { drizzle } from "drizzle-orm/neon-http";
+import { migrate } from "drizzle-orm/neon-http/migrator";
 
 const runMigrate = async () => {
   if (!env.DATABASE_URL) {
     throw new Error("DATABASE_URL is not defined");
   }
 
-  
-const connection = postgres(env.DATABASE_URL, { max: 1 });
+  const connection = neon(env.DATABASE_URL!);
 
-const db = drizzle(connection);
-
+  const db = drizzle(connection);
 
   console.log("⏳ Running migrations...");
 
   const start = Date.now();
 
-  await migrate(db, { migrationsFolder: 'lib/db/migrations' });
+  await migrate(db, { migrationsFolder: "lib/db/migrations" });
 
   const end = Date.now();
 
